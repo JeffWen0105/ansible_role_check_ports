@@ -13,6 +13,8 @@
 
 ## Example
 
+範例以一般 Linux 與 CoreOS 說明
+
 ### 1. Linux
 
 1. 定義四台受控端機器在 inventory 。
