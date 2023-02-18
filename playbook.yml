@@ -1,0 +1,8 @@
+---
+- name: example check_port tool
+  hosts: all
+  gather_facts: no
+  vars_files:
+    - check_file.yml
+  roles:
+    - JeffWen0105.check_ports

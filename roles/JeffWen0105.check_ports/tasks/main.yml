@@ -1,0 +1,32 @@
+---
+# tasks file for JeffWen0105.check_ports
+
+
+- name: generat check port script to "{{ script_file_path }}"
+  template:
+    src: templates/check_port.sh.j2
+    dest: "{{ script_file_path }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: synchronize "{{ script_file_path }}" to remote node
+  synchronize:
+    src: "{{ script_file_path }}"
+    dest: "{{ script_file_path }}"
+
+#- name: clean tmp file
+#  file:
+#    path: "{{ script_file_path }}"
+#    state: absent
+#  delegate_to: localhost
+#  run_once: true
+
+- name: run the script of check_ports
+  shell: |
+    bash /tmp/.check_ports.sh && \
+    rm -f  /tmp/.check_ports.sh
+  register: result
+
+- name: summary result
+  debug:
+    msg: "{{ result.stdout_lines }}"

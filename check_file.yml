@@ -1,0 +1,17 @@
+servers:
+  - host: 8.8.8.8
+    protocol: udp
+    ports:
+      - 123
+      - 53
+  - host: 127.0.0.1
+    protocol: tcp
+    ports:
+      - 22
+      - 80
+  - host: google.com
+    protocol: tcp
+    ports:
+      - 22
+      - 443
+      
