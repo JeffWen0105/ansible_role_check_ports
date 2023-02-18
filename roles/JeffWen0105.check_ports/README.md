@@ -13,6 +13,7 @@ Requirements
 Example List 
 ----------------
 
+```yaml=
 servers:
   - host: example.com
     protocol: dup
@@ -23,7 +24,7 @@ servers:
     ports:
       - 22
       - 80
-
+```
 
 Role Variables
 ------------
