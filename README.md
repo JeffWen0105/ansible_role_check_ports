@@ -4,7 +4,7 @@
 此 Role 會依使用者所需產生一個檢測腳本，並避免 coreos 等輕量級作業系統缺少對應的 module 改用 synchronize 方式及執行腳本。
 
 
-## 詳細內容請參閱
+## 補充內容請參閱
 
 [HowHow Blog : Ansible - 使用 Role 測試 port 是否開通](https://how64bit.com/posts/ansible/2023/ansible-role-check-ports/)
 
