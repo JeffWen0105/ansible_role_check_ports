@@ -47,5 +47,7 @@ Author Information
 
 
 powered by HowHowWen
-Blog : https://how64bit.com
+Blog : https://how64bit.com/posts/ansible/2023/ansible-role-check-ports/
 Mail : blog@how64bit.com
+
+
