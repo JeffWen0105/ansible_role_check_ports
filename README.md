@@ -3,6 +3,13 @@
 對於網管人員在防火牆設定是否生效，時常需要連線至該主機使用 telnet 或是 nc 方式檢查，有些作業系統沒有內建上述的套件也無法很快地安裝及為了使用更快速的方式檢查，我們會需要透過 Jump 主機(Bastion or Capsule)使用 Ansible 檢查。
 此 Role 會依使用者所需產生一個檢測腳本，並避免 coreos 等輕量級作業系統缺少對應的 module 改用 synchronize 方式及執行腳本。
 
+## Requirement
+
+1. ansible core 套件
+2. rsync 套件
+
+
+
 
 ## Example
 
@@ -19,6 +26,8 @@
 ```
 
 2. 設置要檢查的主機、通訊埠及TCP/UDP通訊協定在 check_file.yml 內。
+
+*參數詳情請參閱最下方 Role Variables 說明*
 
 **可以設置多台主機及每台主機也能設置多個 port，不過請務必注意縮排 !!** 
 
@@ -76,7 +85,9 @@ ok: [172.25.250.12] => {
 
 ### 2. CoreOS
 
-囿於 CoreOS 與一般 Linux 有些許差異，需添加下列參數至 ansible.cfg
+1. 設定執行參數
+
+囿於 CoreOS 與一般 Linux 有些許差異，需設定下列參數至 ansible.cfg
 
 ```
 ### for coreos example
@@ -85,9 +96,63 @@ ansible_python_interpreter="PATH=/home/core/bin:$PATH python3"
 private_key_file=./<ssh to coreos private key>
 ```
 
+2. coreos 執行結果
+
+```
+[howhow@ocp4 ansible_role_check_ports]$ oc get no
+NAME                         STATUS   ROLES                  AGE     VERSION
+master-1.ocp4.how64bit.com   Ready    control-plane,master   4h40m   v1.25.4+a34b9e9
+worker-1.ocp4.how64bit.com   Ready    worker                 4h25m   v1.25.4+a34b9e9
+worker-2.ocp4.how64bit.com   Ready    worker                 4h25m   v1.25.4+a34b9e9
+[howhow@ocp4 ansible_role_check_ports]$ ansible-playbook playbook.yml 
+...output omitted...
+TASK [JeffWen0105.check_ports : summary result] *******************************************
+ok: [192.168.122.188] => {
+    "msg": [
+        "📝 Test port on master-1.ocp4.how64bit.com:",
+        " 👍 Success at 8.8.8.8:123",
+        " 👍 Success at 8.8.8.8:53",
+        " 👍 Success at 127.0.0.1:22",
+        " 👍 Success at 127.0.0.1:80",
+        " 📛 Failure at google.com:22",
+        " 👍 Success at google.com:443"
+    ]
+}
+ok: [192.168.122.171] => {
+    "msg": [
+        "📝 Test port on worker-1.ocp4.how64bit.com:",
+        " 👍 Success at 8.8.8.8:123",
+        " 👍 Success at 8.8.8.8:53",
+        " 👍 Success at 127.0.0.1:22",
+        " 📛 Failure at 127.0.0.1:80",
+        " 📛 Failure at google.com:22",
+        " 👍 Success at google.com:443"
+    ]
+}
+ok: [192.168.122.29] => {
+    "msg": [
+        "📝 Test port on worker-2.ocp4.how64bit.com:",
+        " 👍 Success at 8.8.8.8:123",
+        " 👍 Success at 8.8.8.8:53",
+        " 👍 Success at 127.0.0.1:22",
+        " 📛 Failure at 127.0.0.1:80",
+        " 📛 Failure at google.com:22",
+        " 👍 Success at google.com:443"
+    ]
+}
+...output omitted...
+```
 
 
+## Role Variables
 
+
+| Variable | 用途                     |
+| -------- | ------------------------|
+| servers  | 預設參數，務必加上        |
+| host     | 檢測主機，主機名或是 IP   | 
+| protocol | tcp/upd                 |
+| ports    | 檢測通訊阜以List陣列延伸  |
 
 
 ## 產生腳本 Example
