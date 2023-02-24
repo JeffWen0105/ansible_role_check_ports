@@ -9,17 +9,40 @@
   delegate_to: localhost
   run_once: true
 
-- name: synchronize "{{ script_file_path }}" to remote node
-  synchronize:
-    src: "{{ script_file_path }}"
-    dest: "{{ script_file_path }}"
 
-#- name: clean tmp file
-#  file:
-#    path: "{{ script_file_path }}"
-#    state: absent
-#  delegate_to: localhost
-#  run_once: true
+- name: Handle the error
+  block:
+    - name: check packages
+      package_facts:
+        manager: auto
+      ignore_errors: yes
+
+
+    - name: synchronize "{{ script_file_path }}" to remote node
+      synchronize:
+        src: "{{ script_file_path }}"
+        dest: "{{ script_file_path }}"
+      when: "'rsync' in ansible_facts.packages"
+
+    - name: generat check port script to "{{ script_file_path }}"
+      template:
+        src: templates/check_port.sh.j2
+        dest: "{{ script_file_path }}"
+      when: "'rsync' not in ansible_facts.packages"
+
+  rescue:
+    - name: synchronize "{{ script_file_path }}" to remote node
+      synchronize:
+        src: "{{ script_file_path }}"
+        dest: "{{ script_file_path }}"
+
+- name: clean tmp file
+  file:
+    path: "{{ script_file_path }}"
+    state: absent
+  delegate_to: localhost
+  run_once: true
+
 
 - name: run the script of check_ports
   shell: |
@@ -30,3 +53,4 @@
 - name: summary result
   debug:
     msg: "{{ result.stdout_lines }}"
+                                        
